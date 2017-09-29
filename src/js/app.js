@@ -75,17 +75,19 @@
                         setTimeout(function() {
 
                             // mimic checking the status (success) in the BE response
-                            if (event.target.getAttribute('data-url') === '/success') {
-                                return paymentResponse.complete();
-                                alert('The payment was verified by the Back End so the Payment Request API UI is closed. This is where we can navigate to an order confirmation page.');
-                            
-                            // mimic failure status returned by BE
+                            if (event.target.getAttribute('id') === 'success') {
+                                return paymentResponse.complete()
+                                    .then(() => {
+                                        alert('The payment was verified by the Back End so the Payment Request API UI is closed. This is where we can navigate to an order confirmation page.');
+                                    });
+                                
+                                // mimic failure status returned by BE
                             } else {
                                 return paymentResponse.complete('fail');
                                 alert('The payment was not verified by the Back End so the Payment Request API UI stays open and shows an error. There is no page transition.');
                             }
                             
-                        }, 3000);
+                        }, 1500);
 
                         /*const headers = new Headers();
                         headers.append("Content-Type", "application/json");
