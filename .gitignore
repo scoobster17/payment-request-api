@@ -1,0 +1,6 @@
+# 3rd party
+node_modules/
+
+# compiled files
+dist/
+server.js
