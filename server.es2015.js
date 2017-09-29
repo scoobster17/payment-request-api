@@ -22,26 +22,9 @@ const insecureServer = InsecureServer(app).listen(PORTS.INSECURE, () => {
 });
 
 app.post('/check-payment', (req, res) => {
-    console.log('hit');
-    /*const makePayment = () => {
-        return new Promise((resolve, reject) => {
-            console.log('inside');
-            if (Object.keys(req.body).length) {
-                console.log('if', resolve);
-                resolve({success: true, promise: true});
-            } else {
-                console.log('else', reject);
-                reject();
-            }
-        });
+    if (typeof req.headers.fail != 'undefined') {
+        res.status(400).send({success:false});
+    } else {
+        res.status(200).send({success: true});
     }
-    makePayment()
-    .then(data => {
-        console.log(data)
-        next();
-    )}*/
-    //return Promise.resolve().catch(next);
-    // res.status(200).send(res.Response());
-    // console.log(res);
-    res.status(200).send({success: true, final: true});
 });

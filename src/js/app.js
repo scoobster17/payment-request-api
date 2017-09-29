@@ -68,10 +68,11 @@
                         paymentDetails,
                         options
                     );
-
+                    
                     paymentRequest.show()
                     .then(function(paymentResponse) {
-                        console.log(paymentResponse);
+
+                        /*
                         setTimeout(function() {
 
                             // mimic checking the status (success) in the BE response
@@ -88,24 +89,31 @@
                             }
                             
                         }, 1500);
+                        */
 
-                        /*const headers = new Headers();
-                        headers.append("Content-Type", "application/json");
+                        const headers = new Headers();
+                        if (event.target.id === "failure") headers.append("fail", "");
 
                         fetch('/check-payment', { method: 'POST', body: JSON.stringify(paymentResponse), headers })
                         .then(response => {
-                            console.log('res.ok', response.ok)
-                            if (response.ok) return response.json();
+                            if (!response.ok) {
+                                throw new Error();
+                            } else {
+                                return response.json()
+                            };
                         })
                         .then(response => {
-                            console.log(response);
-                            return paymentResponse.complete();
-                            alert('The payment was verified by the Back End so the Payment Request API UI is closed. This is where we can navigate to an order confirmation page.');
+                            return paymentResponse.complete()
+                                .then(() => {
+                                    alert('The payment was verified by the Back End so the Payment Request API UI is closed. This is where we can navigate to an order confirmation page.');
+                                });
                         })
                         .catch(() => {
-                            return paymentResponse.complete('fail');
-                            alert('The payment was not verified by the Back End so the Payment Request API UI stays open and shows an error. There is no page transition.');
-                        });*/
+                            return paymentResponse.complete('fail')
+                                .catch(() => {
+                                    alert('The payment was not verified by the Back End so the Payment Request API UI stays open and shows an error. There is no page transition.');
+                                });
+                        });
                     })
                     .catch((err) => {
                         alert('Nothing would happen now as the user closed the Payment Request API UI, as if to cancel the checkout process.');
