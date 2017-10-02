@@ -23,9 +23,10 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
-    "body-parser": "^1.18.2",
-    "express": "^4.15.5",
-    "node-sass": "^4.5.3",
     "webpack": "^3.6.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.1"
   }
 }
