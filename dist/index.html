@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Payment Request API Demo</title>
+        <link rel="stylesheet" href="./css/style.css" />
+    </head>
+    <body>
+        <header>
+            Payment Request API Demo
+        </header>
+        <main>
+            <h1>Payment Request API Demo</h1>
+            <p>Click the buttons below to trigger the new Payment Request API in a supported browser. (Built using/tested in Chrome 61).</p>
+            <h2>Timeout simulating BE request</h2>
+            <p>These buttons can be used when the server is not in use, and this file is being accessed directly in a browser.</p>
+            <ul>
+                <li>
+                    <button
+                        data-succeed="true"
+                        data-shipping="false"
+                        data-server="false"
+                    >
+                        Checkout successfully with timeout simulating BE request
+                    </button>
+                </li>
+                <li>
+                    <button
+                        data-succeed="false"
+                        data-shipping="false"
+                        data-server="false"    
+                    >
+                        Checkout failure with timeout simulating BE request
+                    </button>
+                </li>
+                <li>
+                    <button
+                        data-succeed="false"
+                        data-shipping="empty"
+                        data-server="false"
+                    >
+                        Checkout failure with timeout simulating BE request, with no shipping options
+                    </button>
+                </li>
+                <li>
+                    <button
+                        data-succeed="true"
+                        data-shipping="true"
+                        data-server="false"    
+                    >
+                        Checkout successfully with timeout simulating BE request and shipping options
+                    </button>
+                </li>
+            </ul>
+            <h2>Actual BE requests to server</h2>
+            <p>These buttons cannot be used unless the server is being used and serving the page, so requests can be made for data.</p>
+            <ul>
+                <li>
+                    <button
+                        data-succeed="true"
+                        data-shipping="false"
+                        data-server="true"
+                    >
+                        Checkout successfully with server verifying payment details
+                    </button>
+                </li>
+                <li>
+                    <button
+                        data-succeed="false"
+                        data-shipping="false"
+                        data-server="true"    
+                    >
+                        Checkout failure with server rejecting payment details
+                    </button>
+                </li>
+                <li>
+                    <button
+                        data-succeed="false"
+                        data-shipping="empty"
+                        data-server="true"
+                    >
+                        Checkout failure with server providing no shipping options for address
+                    </button>
+                </li>
+                <li>
+                    <button
+                        data-succeed="true"
+                        data-shipping="true"
+                        data-server="true"    
+                    >
+                        Checkout successfully with server providing shipping options
+                    </button>
+                </li>
+            </ul>
+        </main>
+        <footer>
+            &copy; Phil Gibbins
+        </footer>
+        <script type="text/javascript" src="./js/bundle.js"></script>
+    </body>
+</html>
