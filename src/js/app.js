@@ -20,6 +20,12 @@
         if (startPaymentBtns.length) Array.prototype.forEach.call(startPaymentBtns, (btn) => {
             btn.addEventListener('click', (event) => {
                 if (supportsPaymentRequestAPI) {
+
+                    // first of all, for demo purposes, check whether the user is trying to use the server when it is not running
+                    if (location.protocol === 'file:' && btn.getAttribute('data-server') === 'true') {
+                        alert('If you want to test this button please serve the site using the README document and try again.');
+                        return;
+                    }
                     
                     // define the supported payment methods. This demo only deals with card payments currently
                     var supportedPaymentMethods = [
