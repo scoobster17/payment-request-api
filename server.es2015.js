@@ -28,3 +28,36 @@ app.post('/check-payment', (req, res) => {
         res.status(200).send({success: true});
     }
 });
+
+app.post('/get-payment-options', (req, res) => {
+    if (typeof req.headers.fail != 'undefined') {
+        res.status(200).send([]);
+    } else {
+        res.status(200).send([
+            {
+                id: 'standard',
+                label: 'Standard Shipping (3-5 Days)',
+                amount: {
+                    currency: 'GBP',
+                    value: 3.59
+                }
+            },
+            {
+                id: 'express',
+                label: 'Express Shipping (1 Day)',
+                amount: {
+                    currency: 'GBP',
+                    value: 5.59
+                }
+            },
+            {
+                id: 'saturday-1500-1700',
+                label: 'Saturday Fixed Timeslot (15:00 - 17:00 slot)',
+                amount: {
+                    currency: 'GBP',
+                    value: 7.59
+                }
+            }
+        ]);
+    }
+});

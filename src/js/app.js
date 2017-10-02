@@ -83,66 +83,112 @@
                     // when applicable, this event updates the UI with shipping options provided
                     paymentRequest.addEventListener('shippingaddresschange', event => {
 
-                        customShippingOptions = [
-                            {
-                                id: 'standard',
-                                label: 'Standard Shipping (3-5 Days)',
-                                amount: {
-                                    currency,
-                                    value: 3.99
+                        // choose for the demo if we want to use the server or not
+                        if (btn.getAttribute('data-server') === 'false') {
+
+                            let newPaymentDetails;
+                            
+                            customShippingOptions = [
+                                {
+                                    id: 'standard',
+                                    label: 'Standard Shipping (3-5 Days)',
+                                    amount: {
+                                        currency,
+                                        value: 3.99
+                                    }
+                                },
+                                {
+                                    id: 'express',
+                                    label: 'Express Shipping (1 Day)',
+                                    amount: {
+                                        currency,
+                                        value: 5.99
+                                    }
+                                },
+                                {
+                                    id: 'saturday-1300-1500',
+                                    label: 'Saturday Fixed Timeslot (13:00 - 15:00 slot)',
+                                    amount: {
+                                        currency,
+                                        value: 7.99
+                                    }
                                 }
-                            },
-                            {
-                                id: 'express',
-                                label: 'Express Shipping (1 Day)',
-                                amount: {
-                                    currency,
-                                    value: 5.99
-                                }
-                            },
-                            {
-                                id: 'saturday-1300-1500',
-                                label: 'Saturday Fixed Timeslot (13:00 - 15:00 slot)',
-                                amount: {
-                                    currency,
-                                    value: 7.99
-                                }
+                            ];
+
+                            // as an example, here we are triggering an error by not providing any shipping options
+                            if (btn.getAttribute('data-shipping') === 'empty') {
+                                newPaymentDetails = {
+                                    total: {
+                                        label: 'Shipping cost',
+                                        amount: {
+                                            currency,
+                                            value: 125
+                                        }
+                                    },
+                                    error: 'This is my custom error. Comment this line to see the default message!',
+                                    shippingOptions: []
+                                };
                             }
-                        ];
+                            
+                            // here we are updating the UI with valid shipping options. These can be provided in the page
+                            // or we can fetch them from a back end endpoint
+                            if (btn.getAttribute('data-shipping') === 'true') {
+                                newPaymentDetails = {
+                                    total: {
+                                        label: 'Total',
+                                        amount: {
+                                            currency,
+                                            value: 125
+                                        }
+                                    },
+                                    shippingOptions: customShippingOptions
+                                };
+                            }
+                            
+                            // update the UI with the new details calculated
+                            event.updateWith(newPaymentDetails);
+                            
+                        } else {
+                            
+                            // we can get the shipping address from the event
+                            const paymentRequestInstance = event.target;
 
-                        let newPaymentDetails;
+                            // for demo purposes fail the request
+                            const headers = new Headers();
+                            if (btn.getAttribute('data-shipping') !== "true") headers.append("fail", "");
+                            
+                            // create a promise to fetch the payment options from the server
+                            const fetchShippingOptions = fetch('/get-payment-options', { method: 'POST', body: JSON.stringify(paymentRequestInstance.shippingAddress), headers })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error();
+                                } else {
+                                    return response.json()
+                                };
+                            })
+                            .then(response => {
 
-                        // as an example, here we are triggering an error by not providing any shipping options
-                        if (btn.getAttribute('data-shipping') === 'empty') {
-                            newPaymentDetails = {
-                                total: {
-                                    label: 'Shipping cost',
-                                    amount: {
-                                        currency,
-                                        value: 125
-                                    }
-                                },
-                                error: 'This is my custom error. Comment this line to see the default message!',
-                                shippingOptions: []
-                            };
+                                // make the options accessible and therefore selectable
+                                customShippingOptions = response;
+
+                                // return the unadjusted amount with the payment options provided by the server
+                                return {
+                                    total: {
+                                        label: 'Total',
+                                        amount: {
+                                            currency: 'GBP',
+                                            value: 125
+                                        },
+                                    },
+                                    error: 'This is my custom error. Comment this line to see the default message!',
+                                    shippingOptions: response
+                                };
+                            });
+                            
+                            // update the UI with shipping options after a spinner is shown and removed whilst the request is made to the server
+                            event.updateWith(fetchShippingOptions);
+
                         }
-                        
-                        // here we are updating the UI with valid shipping options. These can be provided in the page
-                        // or we can fetch them from a back end endpoint
-                        if (btn.getAttribute('data-shipping') === 'true') {
-                            newPaymentDetails = {
-                                total: {
-                                    label: 'Total',
-                                    amount: {
-                                        currency,
-                                        value: 125
-                                    }
-                                },
-                                shippingOptions: customShippingOptions
-                            };
-                        }
-
-                        event.updateWith(newPaymentDetails);
 
                     });
 
@@ -195,7 +241,9 @@
                                 
                             }, 1500);
                         
+                        // if we want to use the demo's server instead
                         } else {
+
                             const headers = new Headers();
                             if (event.target.getAttribute('data-succeed') === "false") headers.append("fail", "");
 
