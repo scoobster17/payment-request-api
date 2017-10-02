@@ -99,10 +99,13 @@
                     // define the supported payment methods. This demo only deals with card payments currently
                     var supportedPaymentMethods = [{
                         supportedMethods: ['basic-card'],
-                        supportedNetworks: ['visa', 'mastercard'] // omit this to see all supported card types
+                        data: {
+                            supportedNetworks: ['visa', 'mastercard'] // omit this to see all supported card types
+                        }
                     }];
 
                     // define the initial payment details object. This example shows the breakdown of display items you can also have
+                    // all logic needs to be done by BE / JS, not the API.
                     var paymentDetails = {
                         total: {
                             label: 'Your label here e.g. Total',
@@ -207,12 +210,14 @@
 
                             // update the UI with the new details calculated
                             event.updateWith(newPaymentDetails);
+
+                            // if for demo purposes we are using the server
                         } else {
 
                             // we can get the shipping address from the event
                             const paymentRequestInstance = event.target;
 
-                            // for demo purposes fail the request
+                            // for demo purposes adjust the request
                             const headers = new Headers();
                             if (btn.getAttribute('data-shipping') !== "true") headers.append("fail", "");
 
@@ -295,9 +300,11 @@
                             // if we want to use the demo's server instead
                         } else {
 
+                            // for demo purposes, fail the request
                             const headers = new Headers();
                             if (event.target.getAttribute('data-succeed') === "false") headers.append("fail", "");
 
+                            // get the server to check the payment details provided
                             fetch('/check-payment', { method: 'POST', body: JSON.stringify(paymentResponse), headers }).then(response => {
                                 if (!response.ok) {
                                     throw new Error();
@@ -305,10 +312,12 @@
                                     return response.json();
                                 };
                             }).then(response => {
+                                // successfully complete the payment
                                 return paymentResponse.complete().then(() => {
                                     alert('The payment was verified by the Back End so the Payment Request API UI is closed. This is where we can navigate to an order confirmation page.');
                                 });
                             }).catch(() => {
+                                // fail the payment
                                 return paymentResponse.complete('fail').catch(() => {
                                     alert('The payment was not verified by the Back End so the Payment Request API UI stays open and shows an error. There is no page transition.');
                                 });
@@ -318,6 +327,7 @@
                         alert('Nothing would happen now as the user closed the Payment Request API UI, as if to cancel the checkout process.');
                     });
                 } else {
+                    // because the API is not supported we need to default back to existing checkout
                     alert('You would now be re-directed to checkout flow as Payment Request API not supported.');
                 }
             });
@@ -332,6 +342,7 @@
     };
 }();
 
+// initialise the payment request demo code
 if (prd && typeof prd.init === 'function') prd.init();
 
 /***/ })
