@@ -1,5 +1,6 @@
 # 3rd party
 node_modules/
+*.log
 
 # compiled files
 dist/

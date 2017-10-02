@@ -3,6 +3,7 @@
     let supportsPaymentRequestAPI = false;
     let startPaymentBtns;
     const currency = 'GBP';
+    let customShippingOptions;
 
     /**
      * PRIVATE METHODS
@@ -19,8 +20,8 @@
                     
                     var supportedPaymentMethods = [
                         {
-                            // supportedMethods: ['basic-card']
-                            supportedMethods: ['visa', 'mastercard']
+                            supportedMethods: ['basic-card'],
+                            supportedNetworks: ['visa', 'mastercard']
                         }
                     ];
                     
@@ -60,7 +61,8 @@
                     var options = {
                         requestPayerName: true,
                         requestPayerPhone: true,
-                        requestPayerEmail: true
+                        requestPayerEmail: true,
+                        requestShipping: true
                     };
 
                     var paymentRequest = new PaymentRequest(
@@ -68,6 +70,84 @@
                         paymentDetails,
                         options
                     );
+
+                    paymentRequest.addEventListener('shippingaddresschange', event => {
+
+                        customShippingOptions = [
+                            {
+                                id: 'standard',
+                                label: 'Standard Shipping (3-5 Days)',
+                                amount: {
+                                    currency,
+                                    value: 3.99
+                                }
+                            },
+                            {
+                                id: 'express',
+                                label: 'Express Shipping (1 Day)',
+                                amount: {
+                                    currency,
+                                    value: 5.99
+                                }
+                            },
+                            {
+                                id: 'saturday-1300-1500',
+                                label: 'Saturday Fixed Timeslot (13:00 - 15:00 slot)',
+                                amount: {
+                                    currency,
+                                    value: 7.99
+                                }
+                            }
+                        ];
+
+                        /*
+                        const newPaymentDetails = {
+                            total: {
+                                label: 'Shipping cost',
+                                amount: {
+                                    currency,
+                                    value: 125
+                                }
+                            },
+                            error: 'This is my custom error. Comment this line to see the default message!',
+                            shippingOptions: []
+                        };
+                        */
+                        
+                        const newPaymentDetails = {
+                            total: {
+                                label: 'Total',
+                                amount: {
+                                    currency,
+                                    value: 125
+                                }
+                            },
+                            shippingOptions: customShippingOptions
+                        };
+
+                        event.updateWith(newPaymentDetails);
+
+                    });
+
+                    paymentRequest.addEventListener('shippingoptionchange', (event) => {  
+                        const paymentRequestInstance = event.target;
+                        const selectedShippingId = paymentRequestInstance.shippingOption;
+
+                        customShippingOptions.forEach(option => {
+                            option.selected = option.id === selectedShippingId;
+                        });
+
+                        event.updateWith({
+                            total: {
+                                label: 'Total',
+                                amount: {
+                                    currency,
+                                    value: 132.99
+                                }
+                            },
+                            shippingOptions: customShippingOptions
+                        });
+                    });
                     
                     paymentRequest.show()
                     .then(function(paymentResponse) {
